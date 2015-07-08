@@ -63,12 +63,15 @@ class ImageNetDownloader:
 	def downloadBBox(self, wnid):
 		filename = str(wnid) + '.tar.gz'
 		url = self.host + '/downloads/bbox/bbox/' + filename
-		filename = self.download_file(url, self.mkWnidDir(wnid))
-		currentDir = os.getcwd()
-		os.chdir(wnid)
-		self.extractTarfile(filename)
-		print 'Download bbbox annotation from ' + url + ' to ' + filename
-		os.chdir(currentDir)
+                try:
+                    filename = self.download_file(url, self.mkWnidDir(wnid))
+                    currentDir = os.getcwd()
+                    os.chdir(wnid)
+                    self.extractTarfile(filename)
+                    print 'Download bbbox annotation from ' + url + ' to ' + filename
+                    os.chdir(currentDir)
+                except Exception, error:
+                    print 'Fail to download' + url
 
 	def getImageURLsOfWnid(self, wnid):
 		url = 'http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=' + str(wnid)
