@@ -1,7 +1,9 @@
 import argparse
 import sys
+import os
 import bbox_helper
 import imagedownloader
+import pref_utils
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Help the user to download, crop, and handle images from ImageNet')
@@ -20,6 +22,13 @@ if __name__ == '__main__':
 
     wnid = str(args.wnid)
     downloader = imagedownloader.ImageNetDownloader()
+    allAnnotationFiles = None
+    username = None
+    accessKey = None
+    userInfo = pref_utils.readUserInfo()
+    if not userInfo is None:
+        username = userInfo[0]
+        accessKey = userInfo[1]
 
     if args.downloadImages is True:
         list = downloader.getImageURLsOfWnid(wnid)
@@ -35,16 +44,24 @@ if __name__ == '__main__':
 
     if args.downloadOriginalImages is True:
     # Download original image, but need to set key and username
-        username = raw_input('Enter your username : ')
-        accessKey = raw_input('Enter your accessKey : ')
+        if username is None or accessKey is None:
+            username = raw_input('Enter your username : ')
+            accessKey = raw_input('Enter your accessKey : ')
+            if username and accessKey:
+                pref_utils.saveUserInfo(username, accessKey)
+
         if username is None or accessKey is None:
             print 'need username and accessKey to download original images'
         else:
             downloader.downloadOriginalImages(wnid, username, accessKey)
 
-        #for andnotation_xml in allAnnotationFiles:
-        #    bboxhelper = bbox_helper.BBoxHelper(andnotation_xml)
-            # Get box list
-        #    boxs = bboxhelper.get_BoudingBoxs()
-        #    print boxs
-            #bboxhelper.saveBoundBoxImage(savedTargetDir = str(wnid) + 'boudingboxImages')
+        # Read annotation files and crop the original image
+        if not allAnnotationFiles is None:
+            for andnotation_xml in allAnnotationFiles:
+                bboxhelper = bbox_helper.BBoxHelper(andnotation_xml)
+                # Get box list
+                boxs = bboxhelper.get_BoudingBoxs()
+                print boxs
+                # Save to wnid_boudingboxImages dir
+                crop_images_dir = os.path.join(wnid, str(wnid) + '_boudingboxImages')
+                bboxhelper.saveBoundBoxImage(savedTargetDir = crop_images_dir)
