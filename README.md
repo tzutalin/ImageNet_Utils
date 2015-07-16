@@ -34,3 +34,12 @@ $ python main.py --wnid n00007846 --downloadBoundingBox
 Download all original images
 
 $ python main.py --wnid n00007846 --downloadOriginalImages
+
+# Other utils
+Utils to create train.txt and test.txt
+
+Use the bellow cmd, and you can get image path and its label in train.txt and test.txt
+
+$ python labelcreator.py --size_of_train 1400 --size_of_test 200  --label 11 --dir car
+
+
