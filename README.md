@@ -42,6 +42,6 @@ Use the bellow cmd, and you can get image path and its label in train.txt and te
 
 $ python labelcreator.py --size_of_train 1400 --size_of_test 200  --label 11 --dir car
 
-Auto assign a label to each folder containing images under the dir
+Auto assign a label to each folder containing images under the dir. Create train.txt, val.txt, and test.txt. Size is 1200, 300, and 300
 
-$ python labelcreator.py --size_of_train 1400 --size_of_test 200
+$ python labelcreator.py --size_of_train 1200 --size_of_val 300 --size_of_test 300
