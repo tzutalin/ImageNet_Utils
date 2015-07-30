@@ -25,15 +25,15 @@ optional arguments
 # Sample:
 Get the urls of wnid and download all of them
 
-$ python main.py --wnid n02710324 --downloadImages
+$ python main.py --downloadImages --wnid n02710324
 
 Download the boundingbox xml of wnid
 
-$ python main.py --wnid n00007846 --downloadBoundingBox
+$ python main.py --downloadBoundingBox --wnid n00007846
 
 Download all original images
 
-$ python main.py --wnid n00007846 --downloadOriginalImages
+$ python main.py --downloadOriginalImages --wnid n00007846
 
 # Other utils
 Utils to create train.txt and test.txt
@@ -42,4 +42,6 @@ Use the bellow cmd, and you can get image path and its label in train.txt and te
 
 $ python labelcreator.py --size_of_train 1400 --size_of_test 200  --label 11 --dir car
 
+Auto assign a label to each folder containing images under the dir
 
+$ python labelcreator.py --size_of_train 1400 --size_of_test 200
