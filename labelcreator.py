@@ -47,7 +47,7 @@ def labelImagesInDir(label, folderPath):
         elif countOfTestImg < size_of_test:
             test_file.write(imagePath + ' ' + str(label) + '\n')
             countOfTestImg += 1
-        elif countOfTestImg < size_of_val:
+        elif countOfValImg < size_of_val:
             val_file.write(imagePath + ' ' + str(label) + '\n')
             countOfValImg += 1
 
@@ -82,11 +82,16 @@ def autolableAllDir(path='.'):
                 print 'Rmoeve fail'
 
     label = 0
+    label_file = open('label.txt', 'w')
     for subDir in subdirectories:
         if not os.path.isdir(subDir) or subDir.startswith('.'):
             continue
         labelImagesInDir(label, subDir)
         label = label + 1
+        label_file.write(subDir + '\n')
+
+    label_file.close()
+    logging.warning('Total label size ' + str(label))
 
 if __name__ == '__main__':
     if os.path.exists('log'):
