@@ -82,7 +82,7 @@ def autolableAllDir(path='.'):
                 print 'Rmoeve fail'
 
     label = 0
-    label_file = open('label.txt', 'w')
+    label_file = open('synset_words.txt', 'w')
     for subDir in subdirectories:
         if not os.path.isdir(subDir) or subDir.startswith('.'):
             continue
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     if os.path.exists('log'):
         os.remove('log')
     logging.basicConfig(filename='log',level=logging.DEBUG)
-    p = argparse.ArgumentParser(description='Create a label to train.txt or test.txt')
+    p = argparse.ArgumentParser(description='Create a label to train.txt, val.txt, or test.txt')
     p.add_argument('--dir', '-d', help='Image label that will be saved to train.txt or test.txt')
     p.add_argument('--label', '-l', type=int, help='Image label that will be saved to train.txt or test.txt')
     p.add_argument('--size_of_train', type=int, default=1000, help='put how many image to train.txt')
