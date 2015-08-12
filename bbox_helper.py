@@ -3,8 +3,7 @@ import Image
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
-def hello():
-	print 'helo'
+
 def scanAnnotationFolder(annotationFolderPath):
 	annotationFiles = []
 	for root, dirs, files in os.walk(annotationFolderPath):
@@ -70,3 +69,15 @@ class BBoxHelper:
 					return os.path.join(root, file)
 		print filename + ' not found'
 		return None
+
+import argparse
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description='Help the user to download, crop, and handle images from ImageNet')
+    p.add_argument('--bpath', help='Boudingbox xml path')
+    args = p.parse_args()
+    # Give bounding_box xml and show its JPEG path and bouding rects
+    boudingbox_xml_path = args.bpath
+    if not boudingbox_xml_path is None:
+        bbhelper = BBoxHelper(boudingbox_xml_path)
+        print bbhelper.findImagePath()
+        print bbhelper.get_BoudingBoxs()
