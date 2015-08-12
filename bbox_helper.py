@@ -13,6 +13,11 @@ def scanAnnotationFolder(annotationFolderPath):
 				annotationFiles.append(os.path.join(root, file))
 	return annotationFiles
 
+def findWnidsInAnnotationFolder(annotationPath, imagePath):
+    ids = getMatchedIds(annotationPath, imagePath)
+
+    return list(set([x.split('_')[0] for x in ids]))
+
 def copyAnnotations(annotationFiles, dstPath):
     if not os.path.exists(dstPath):
         os.makedirs(dstPath)
