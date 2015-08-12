@@ -30,6 +30,7 @@ Auto assign a label to each folder containing images under the dir. Create train
 
 ### Usage - Process boudingbox xml:
 Search the specificed image according to its boudingbox's xml
+
 `$ python bbox_helper.py --bpath n00007846/Annotation/n00007846/n00007846_23985.xml`
 
 Output:
