@@ -28,13 +28,29 @@ Auto assign a label to each folder containing images under the dir. Create train
 
 `$ python labelcreator.py --size_of_train 1200 --size_of_val 300 --size_of_test 300`
 
-### Usage - Process boudingbox xml:
-Search the specificed image according to its boudingbox's xml
+### Usage - Process boundingbox xml:
+Search the specificed image according to its boudingbox's xml. If found, it will crop and save as ./boundingbox/*.JPEG
 
-`$ python bbox_helper.py --bpath n00007846/Annotation/n00007846/n00007846_23985.xml`
+`$ python bbox_helper.py --bxmlpath n00007846/Annotation/n00007846/n00007846_23985.xml --save_boundingbox`
 
 Output:
 
 	./n00007846/n00007846_original_images/n00007846_23985.JPEG
 
 	[[227, 25, 323, 91]]
+	save to n00007846/bounding_box_imgs/n00007846_23985_box1.JPEG
+
+`$ python bbox_helper.py --bxmldir n00007846/ --save_boundingbox`
+
+Output:
+
+	./n00007846/n00007846_original_images/n00007846_35737.JPEG
+	[[46, 99, 165, 290]]
+	save to n00007846/bounding_box_imgs/n00007846_35737_box1.JPEG
+	./n00007846/n00007846_original_images/n00007846_132010.JPEG
+	[[101, 57, 330, 497]]
+	save to n00007846/bounding_box_imgs/n00007846_132010_box1.JPEG
+	./n00007846/n00007846_original_images/n00007846_158081.JPEG
+	[[55, 85, 249, 498]]
+	.....
+
