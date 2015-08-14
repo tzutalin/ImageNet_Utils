@@ -7,7 +7,7 @@ import pref_utils
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Help the user to download, crop, and handle images from ImageNet')
-    p.add_argument('--wnid', help='ImageNet Wnid. E.g. : n02710324')
+    p.add_argument('--wnid', nargs='+', help='ImageNet Wnid. E.g. : n02710324')
     p.add_argument('--downloadImages', help='Should download images', action='store_true', default=False)
     p.add_argument('--downloadOriginalImages', help='Should download original images', action='store_true', default=False)
     p.add_argument('--downloadBoundingBox', help='Should download bouding box annotation files', action='store_true', default=False)
@@ -20,9 +20,8 @@ if __name__ == '__main__':
         print 'No wnid'
         sys.exit()
 
-    wnid = str(args.wnid)
     downloader = imagedownloader.ImageNetDownloader()
-    allAnnotationFiles = None
+    allAnnotationFiles = {}
     username = None
     accessKey = None
     userInfo = pref_utils.readUserInfo()
@@ -31,16 +30,18 @@ if __name__ == '__main__':
         accessKey = userInfo[1]
 
     if args.downloadImages is True:
-        list = downloader.getImageURLsOfWnid(wnid)
-        downloader.downloadImagesByURLs(wnid, list)
+        for id in args.wnid:
+            list = downloader.getImageURLsOfWnid(id)
+            downloader.downloadImagesByURLs(id, list)
 
     if args.downloadBoundingBox is True:
-        # Download andnotation files
-        downloader.downloadBBox(wnid)
-        # Get the list of image URLs of Wnid
-        allAnnotationFiles = bbox_helper.scanAnnotationFolder(wnid)
-        for file in allAnnotationFiles:
-            print 'Download: ' + file
+        for id in args.wnid:
+            # Download andnotation files
+            downloader.downloadBBox(id)
+            # Get the list of image URLs of Wnid
+            allAnnotationFiles[id] = bbox_helper.scanAnnotationFolder(id)
+            for file in allAnnotationFiles[id]:
+                print 'Download: ' + file
 
     if args.downloadOriginalImages is True:
     # Download original image, but need to set key and username
@@ -53,15 +54,16 @@ if __name__ == '__main__':
         if username is None or accessKey is None:
             print 'need username and accessKey to download original images'
         else:
-            downloader.downloadOriginalImages(wnid, username, accessKey)
+            for id in args.wnid:
+                downloader.downloadOriginalImages(id, username, accessKey)
 
         # Read annotation files and crop the original image
-        if not allAnnotationFiles is None:
-            for andnotation_xml in allAnnotationFiles:
+        for key, item in allAnnotationFiles.iteritems():
+            for andnotation_xml in item:
                 bboxhelper = bbox_helper.BBoxHelper(andnotation_xml)
                 # Get box list
                 boxs = bboxhelper.get_BoudingBoxs()
                 print boxs
                 # Save to wnid_boudingboxImages dir
-                crop_images_dir = os.path.join(wnid, str(wnid) + '_boudingboxImages')
+                crop_images_dir = os.path.join(key, key + '_boudingboxImages')
                 bboxhelper.saveBoundBoxImage(savedTargetDir = crop_images_dir)
