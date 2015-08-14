@@ -2,20 +2,20 @@
 Utils to help download images by wnid, crop bounding box, etc.
 
 ### Requirements
-You should signup [ImageNet](http://www.image-net.org/)
+If you would like to download the original images, you should signup [ImageNet](http://www.image-net.org/)
 
 ### Usage - Download images:
-Get the urls of wnid and download all of them
+Get the urls of wnid and download all of them. E.g., download [Dog images from ImageNet](http://www.image-net.org/synset?wnid=n02084071) and save images to ./n02084071/url_images/*.jpg
 
-`$ python downloadutils.py --downloadImages --wnid n02710324`
+`$ python downloadutils.py --downloadImages --wnid n02084071`
 
-Download the boundingbox xml of wnid
-
-`$ python downloadutils.py --downloadBoundingBox --wnid n00007846`
-
-Download all original images
+Download all original images. E.g., download the original images about [person](http://www.image-net.org/synset?wnid=n00007846) and save to ./n00007846/n00007846_original_images/*.JPEG
 
 `$ python downloadutils.py --downloadOriginalImages --wnid n00007846`
+
+Download the boundingbox xml of wnid. E.g., download  bounding boxes of original images about [person](http://www.image-net.org/synset?wnid=n00007846)
+
+`$ python downloadutils.py --downloadBoundingBox --wnid n00007846`
 
 ### Usage - Label images:
 Utils to create train.txt, val.txt, and test.txt
