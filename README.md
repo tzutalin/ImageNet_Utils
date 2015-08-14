@@ -1,4 +1,4 @@
-# ImageNet_DownloadHelper
+# ImageNet-Utils
 Utils to help download images by wnid, crop bounding box, etc.
 
 ### Requirements
