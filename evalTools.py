@@ -1,14 +1,33 @@
 import os
 import shutil
 
-def findWnidsInAnnotationFolder(annotationPath, imagePath):
-    ids = getMatchedIds(annotationPath, imagePath)
+def _mkdir(path, filePath=False):
+    if filePath:
+        dirname = os.path.dirname(path)
+    else:
+        dirname = path
 
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+def _findWindsInAnnotationFolder(ids):
     return list(set([x.split('_')[0] for x in ids]))
 
+def _saveImgIdList(outputFileName, ids):
+    _mkdir(outputFileName, True)
+
+    with open(outputFileName, 'w') as out:
+        # Enumerate from 1 for matlab scripts
+        for i, f in enumerate(ids, start=1):
+            line = f + ' ' + str(i) + '\n'
+            out.write(line)
+
+def findWnidsInAnnotationFolder(annotationPath, imagePath):
+    return _findWindsInAnnotationFolder(
+        getMatchedIds(annotationPath, imagePath))
+
 def copyAnnotations(annotationFiles, dstPath):
-    if not os.path.exists(dstPath):
-        os.makedirs(dstPath)
+    _mkdir(dstPath)
 
     for f in annotationFiles:
         if os.path.isfile(f):
@@ -46,15 +65,5 @@ def getMatchedIds(*paths):
     return list(results)
 
 def saveImgIdList(outputFileName, annotationPath, imagePath):
-    dirname = os.path.dirname(outputFileName)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    ids = sorted(getMatchedIds(annotationPath, imagePath))
-
-    with open(outputFileName, 'w') as out:
-        # Enumerate from 1 for matlab scripts
-        for i, f in enumerate(ids, start=1):
-            line = f + ' ' + str(i) + '\n'
-            out.write(line)
-
+    _saveImgIdList( outputFileName,
+                   sorted(getMatchedIds(annotationPath, imagePath)))
