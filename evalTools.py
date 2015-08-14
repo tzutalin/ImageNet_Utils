@@ -22,6 +22,28 @@ def _saveImgIdList(outputFileName, ids):
             line = f + ' ' + str(i) + '\n'
             out.write(line)
 
+def _saveMetaData(outputFileName, imagenetStructureFile, ids):
+    import xml.etree.ElementTree as et
+    import scipy.io as sio
+    import numpy as np
+
+    tree = et.parse(imagenetStructureFile)
+    root = tree.getroot()
+
+    dt = [('WNID', 'S10'), ('name', 'S100'), ('description', 'S1000')]
+    arr = np.zeros((len(ids),), dtype=dt)
+    for i, id in enumerate(ids):
+        obj = root.find(".//*[@wnid='%s']" % id)
+        if obj is None:
+            continue
+
+        arr[i][dt[0][0]] = id
+        arr[i][dt[1][0]] = obj.attrib['words']
+        arr[i][dt[2][0]] = obj.attrib['gloss']
+
+    _mkdir(outputFileName, True)
+    sio.savemat(outputFileName, {'synsets': arr})
+
 def findWnidsInAnnotationFolder(annotationPath, imagePath):
     return _findWindsInAnnotationFolder(
         getMatchedIds(annotationPath, imagePath))
@@ -67,3 +89,7 @@ def getMatchedIds(*paths):
 def saveImgIdList(outputFileName, annotationPath, imagePath):
     _saveImgIdList( outputFileName,
                    sorted(getMatchedIds(annotationPath, imagePath)))
+
+def saveMetaData(outputFileName, imagenetStructureFile, annotationPath, imagePath):
+    _saveMetaData(outputFileName, imagenetStructureFile,
+                  findWnidsInAnnotationFolder(annotationPath, imagePath))
