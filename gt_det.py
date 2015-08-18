@@ -1,3 +1,5 @@
+import bbox_helper
+import argparse
 import os
 import shutil
 
@@ -44,32 +46,7 @@ def _saveMetaData(outputFileName, imagenetStructureFile, ids):
     _mkdir(outputFileName, True)
     sio.savemat(outputFileName, {'synsets': arr})
 
-def findWnidsInAnnotationFolder(annotationPath, imagePath):
-    return _findWindsInAnnotationFolder(
-        getMatchedIds(annotationPath, imagePath))
-
-def copyAnnotations(annotationFiles, dstPath):
-    _mkdir(dstPath)
-
-    for f in annotationFiles:
-        if os.path.isfile(f):
-            shutil.copy(f, dstPath)
-
-def copyImagesByAnnFiles(annotationFiles, imagePath, dstPath):
-    if not os.path.exists(dstPath):
-        os.makedirs(dstPath)
-
-    imageNames = []
-    for e in annotationFiles:
-        imageNames.append(os.path.basename(os.path.splitext(e)[0]) + '.JPEG')
-
-    for root, dirs, files in os.walk(imagePath):
-        for f in files:
-            if f in imageNames:
-                shutil.copy(os.path.join(root,f), dstPath)
-                imageNames.remove(f)
-
-def getMatchedIds(*paths):
+def _getMatchedIds(*paths):
     if len(paths) == 0:
         return []
 
@@ -86,10 +63,71 @@ def getMatchedIds(*paths):
 
     return list(results)
 
+def _procPath(args):
+    import pickle
+    SAVED_PATH = '.pdet'
+    if args is None:
+        try:
+            with open(SAVED_PATH, 'rb') as output:
+                return pickle.load(output)
+        except:
+            print('Please specify paths.')
+            exit()
+    else:
+        with open(SAVED_PATH, 'wb') as output:
+            pickle.dump(args, output, pickle.HIGHEST_PROTOCOL)
+        return args
+
+def findWnidsInAnnotationFolder(annotationPath, imagePath):
+    return _findWindsInAnnotationFolder(
+        _getMatchedIds(annotationPath, imagePath))
+
+def copyAnnotations(annotationFiles, dstPath):
+    _mkdir(dstPath)
+
+    for f in annotationFiles:
+        if os.path.isfile(f):
+            shutil.copy(f, dstPath)
+
+def copyImagesByAnnFiles(annotationFiles, imagePath, dstPath):
+    _mkdir(dstPath)
+
+    imageNames = []
+    for e in annotationFiles:
+        imageNames.append(os.path.basename(os.path.splitext(e)[0]) + '.JPEG')
+
+    for root, dirs, files in os.walk(imagePath):
+        for f in files:
+            if f in imageNames:
+                shutil.copy(os.path.join(root,f), dstPath)
+                imageNames.remove(f)
+
 def saveImgIdList(outputFileName, annotationPath, imagePath):
     _saveImgIdList( outputFileName,
-                   sorted(getMatchedIds(annotationPath, imagePath)))
+                   sorted(_getMatchedIds(annotationPath, imagePath)))
 
 def saveMetaData(outputFileName, imagenetStructureFile, annotationPath, imagePath):
     _saveMetaData(outputFileName, imagenetStructureFile,
                   findWnidsInAnnotationFolder(annotationPath, imagePath))
+
+if '__main__' == __name__:
+    p = argparse.ArgumentParser(description='Help users to prepare ground truth \
+                                for ILSVC detection results evaluation')
+    p.add_argument('dst', type=str, help='Output folder')
+    p.add_argument('-p', dest='path', nargs=3, type=str, help='Three paths \
+                   should be specified: Path to search annotation files, path \
+                   to search images, path of ImageNet structure file. \
+                   If not set, use saved paths')
+    args = p.parse_args()
+    aPath, iPath, struct = _procPath(args.path)
+
+    OUT_ANN_DIR = os.path.join(args.dst, 'annotations')
+    OUT_IMG_DIR = os.path.join(args.dst, 'images')
+    OUT_ID_LIST = os.path.join(args.dst, 'ids.txt')
+    OUT_META_DATA = os.path.join(args.dst, 'meta.mat')
+    anns = bbox_helper.scanAnnotationFolder(aPath)
+    copyAnnotations(anns, OUT_ANN_DIR)
+    copyImagesByAnnFiles(anns, iPath, OUT_IMG_DIR)
+    ids = _getMatchedIds(OUT_ANN_DIR, OUT_IMG_DIR)
+    _saveImgIdList(OUT_ID_LIST, sorted(ids))
+    _saveMetaData(OUT_META_DATA, struct, _findWindsInAnnotationFolder(ids))
