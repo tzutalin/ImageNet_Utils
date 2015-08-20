@@ -74,3 +74,4 @@ Reorder the meta data to match the labels of given dataset.
 	n00007846
 	n03002096
 
+Add '--padding' to pad empty item if WNID is not found in src.mat.

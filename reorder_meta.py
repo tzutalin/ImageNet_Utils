@@ -7,6 +7,8 @@ if '__main__' == __name__:
     p.add_argument('src', type=str, help='Input meta data')
     p.add_argument('idOrder', type=str, help='File listing the order of WNIDs')
     p.add_argument('dst', type=str, help='Output meta data')
+    p.add_argument('--padding',dest='pad', action='store_true',
+                   help='Pad empty item if WNID is not found')
     args = p.parse_args()
 
     KEY = 'synsets'
@@ -19,8 +21,11 @@ if '__main__' == __name__:
             w = w.strip()
             item = next((x for x in srcSynsets if w == x['WNID']), None)
             if item is None:
-                print('WNID = %s not found' % w)
-                exit()
+                if args.pad:
+                    item = (w, '', '')
+                else:
+                    print('WNID = %s not found in %s!!' % (w, args.src))
+                    exit()
             dst.append(tuple(item))
 
         # Check if the order is right
