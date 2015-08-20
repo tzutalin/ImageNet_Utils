@@ -62,3 +62,15 @@ Help users to prepare ground truth for ILSVC detection results evaluation.
 The above command will search ann_dir and img_dir recursively and copies annotation files and images to dst_dir. It also generates image ID list and meta data in dst_dir.
 
 `-p ann_dir img_dir structure.xml` can be omitted if the same settings are used. structure.xml is the ImageNet structure file http://www.image-net.org/api/xml/structure_released.xml
+
+### Usage - Reorder the meta data:
+Reorder the meta data to match the labels of given dataset.
+
+`$ python reorder_meta.py src.mat order.txt dst.mat`
+
+`order.txt` list the WNIDs in the desired order. For example,
+
+	n03781787
+	n00007846
+	n03002096
+
