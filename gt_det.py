@@ -2,6 +2,8 @@ import bbox_helper
 import argparse
 import os
 import shutil
+import scipy.io as sio
+import numpy as np
 
 def _mkdir(path, filePath=False):
     if filePath:
@@ -12,7 +14,7 @@ def _mkdir(path, filePath=False):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-def _findWindsInAnnotationFolder(ids):
+def _findWnidsInAnnotationFolder(ids):
     return list(set([x.split('_')[0] for x in ids]))
 
 def _saveImgIdList(outputFileName, ids):
@@ -24,27 +26,30 @@ def _saveImgIdList(outputFileName, ids):
             line = f + ' ' + str(i) + '\n'
             out.write(line)
 
+def _matlabArr(count):
+    dt = [('WNID', 'S10'), ('name', 'S100'), ('description', 'S1000')]
+    return np.zeros(count, dtype=dt)
+
+def _saveArr(outputFileName, arr):
+    _mkdir(outputFileName, True)
+    sio.savemat(outputFileName, {'synsets': arr})
+
 def _saveMetaData(outputFileName, imagenetStructureFile, ids):
     import xml.etree.ElementTree as et
-    import scipy.io as sio
-    import numpy as np
 
     tree = et.parse(imagenetStructureFile)
     root = tree.getroot()
 
-    dt = [('WNID', 'S10'), ('name', 'S100'), ('description', 'S1000')]
-    arr = np.zeros((len(ids),), dtype=dt)
+    arr = _matlabArr(len(ids))
     for i, id in enumerate(ids):
         obj = root.find(".//*[@wnid='%s']" % id)
         if obj is None:
             continue
 
-        arr[i][dt[0][0]] = id
-        arr[i][dt[1][0]] = obj.attrib['words']
-        arr[i][dt[2][0]] = obj.attrib['gloss']
-
-    _mkdir(outputFileName, True)
-    sio.savemat(outputFileName, {'synsets': arr})
+        arr[i]['WNID'] = id
+        arr[i]['name'] = obj.attrib['words']
+        arr[i]['description'] = obj.attrib['gloss']
+    _saveArr(outputFileName, arr)
 
 def _getMatchedIds(*paths):
     if len(paths) == 0:
@@ -79,7 +84,7 @@ def _procPath(args):
         return args
 
 def findWnidsInAnnotationFolder(annotationPath, imagePath):
-    return _findWindsInAnnotationFolder(
+    return _findWnidsInAnnotationFolder(
         _getMatchedIds(annotationPath, imagePath))
 
 def copyAnnotations(annotationFiles, dstPath):
@@ -110,6 +115,16 @@ def saveMetaData(outputFileName, imagenetStructureFile, annotationPath, imagePat
     _saveMetaData(outputFileName, imagenetStructureFile,
                   findWnidsInAnnotationFolder(annotationPath, imagePath))
 
+def saveMetaData(outputFileName, classList):
+    with open(classList, 'rb') as f:
+        classes  = f.readline().strip().split(' ')
+        arr = _matlabArr(len(classes))
+        for i, c in enumerate(classes):
+            arr[i]['WNID'] = c
+            arr[i]['name'] = c
+            arr[i]['description'] = ''
+    _saveArr(outputFileName, arr)
+
 if '__main__' == __name__:
     p = argparse.ArgumentParser(description='Help users to prepare ground truth \
                                 for ILSVC detection results evaluation')
@@ -118,6 +133,8 @@ if '__main__' == __name__:
                    should be specified: Path to search annotation files, path \
                    to search images, path of ImageNet structure file. \
                    If not set, use saved paths')
+    p.add_argument('--ni', dest='notImageNet', action='store_true',
+                   help='Not using ImageNet structure file')
     args = p.parse_args()
     aPath, iPath, struct = _procPath(args.path)
 
@@ -130,4 +147,7 @@ if '__main__' == __name__:
     copyImagesByAnnFiles(anns, iPath, OUT_IMG_DIR)
     ids = _getMatchedIds(OUT_ANN_DIR, OUT_IMG_DIR)
     _saveImgIdList(OUT_ID_LIST, sorted(ids))
-    _saveMetaData(OUT_META_DATA, struct, _findWindsInAnnotationFolder(ids))
+    if args.notImageNet:
+        saveMetaData(OUT_META_DATA, struct)
+    else:
+        _saveMetaData(OUT_META_DATA, struct, _findWnidsInAnnotationFolder(ids))
