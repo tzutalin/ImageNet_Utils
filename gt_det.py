@@ -34,18 +34,37 @@ def _saveArr(outputFileName, arr):
     _mkdir(outputFileName, True)
     sio.savemat(outputFileName, {'synsets': arr})
 
-def _saveMetaData(outputFileName, imagenetStructureFile, ids):
+def _toLabelAndName(labelNameMap):
+    f = open(labelNameMap, 'rb')
+    for line in f:
+        label, name = line.strip().split(' ')
+        yield int(label), name
+    f.close()
+
+def _findMaxLable(labelNameMap):
+    maxLabel = -1
+    for i, _ in _toLabelAndName(labelNameMap):
+        if int(i) > maxLabel:
+            maxLabel = int(i)
+
+    if maxLabel > 0:
+        return maxLabel
+    else:
+        return 1
+
+def _saveMetaData(outputFileName, imagenetStructureFile, labelNameMap):
     import xml.etree.ElementTree as et
 
     tree = et.parse(imagenetStructureFile)
     root = tree.getroot()
 
-    arr = _matlabArr(len(ids))
-    for i, id in enumerate(ids):
+    arr = _matlabArr(_findMaxLable(labelNameMap))
+    for i, id in _toLabelAndName(labelNameMap):
         obj = root.find(".//*[@wnid='%s']" % id)
         if obj is None:
             continue
 
+        i = i - 1
         arr[i]['WNID'] = id
         arr[i]['name'] = obj.attrib['words']
         arr[i]['description'] = obj.attrib['gloss']
@@ -111,43 +130,39 @@ def saveImgIdList(outputFileName, annotationPath, imagePath):
     _saveImgIdList( outputFileName,
                    sorted(_getMatchedIds(annotationPath, imagePath)))
 
-def saveMetaData(outputFileName, imagenetStructureFile, annotationPath, imagePath):
-    _saveMetaData(outputFileName, imagenetStructureFile,
-                  findWnidsInAnnotationFolder(annotationPath, imagePath))
+def saveMetaData(outputFileName, imagenetStructureFile, labelNameMap):
+    _saveMetaData(outputFileName, imagenetStructureFile, labelNameMap)
 
-def saveMetaData(outputFileName, classList):
-    with open(classList, 'rb') as f:
-        classes  = f.readline().strip().split(' ')
-        arr = _matlabArr(len(classes))
-        for i, c in enumerate(classes):
-            arr[i]['WNID'] = c
-            arr[i]['name'] = c
-            arr[i]['description'] = ''
+def saveMetaData(outputFileName, labelNameMap):
+    arr = _matlabArr(_findMaxLable(labelNameMap))
+    for i, c in _toLabelAndName(labelNameMap):
+        i = i - 1
+        arr[i]['WNID'] = c
+        arr[i]['name'] = c
+        arr[i]['description'] = ''
     _saveArr(outputFileName, arr)
 
 if '__main__' == __name__:
     p = argparse.ArgumentParser(description='Help users to prepare ground truth \
                                 for ILSVC detection results evaluation')
     p.add_argument('dst', type=str, help='Output folder')
-    p.add_argument('-p', dest='path', nargs=3, type=str, help='Three paths \
+    p.add_argument('-p', dest='path', nargs='+', type=str, help='Four paths \
                    should be specified: Path to search annotation files, path \
-                   to search images, path of ImageNet structure file. \
-                   If not set, use saved paths')
-    p.add_argument('--ni', dest='notImageNet', action='store_true',
-                   help='Not using ImageNet structure file')
+                   to search images, label to class name map, ImageNet structure \
+                   file (optional). If not set, use saved paths')
     args = p.parse_args()
-    aPath, iPath, struct = _procPath(args.path)
+    paths = _procPath(args.path)
 
     OUT_ANN_DIR = os.path.join(args.dst, 'annotations')
     OUT_IMG_DIR = os.path.join(args.dst, 'images')
     OUT_ID_LIST = os.path.join(args.dst, 'ids.txt')
     OUT_META_DATA = os.path.join(args.dst, 'meta.mat')
-    anns = bbox_helper.scanAnnotationFolder(aPath)
+    anns = bbox_helper.scanAnnotationFolder(paths[0])
     copyAnnotations(anns, OUT_ANN_DIR)
-    copyImagesByAnnFiles(anns, iPath, OUT_IMG_DIR)
+    copyImagesByAnnFiles(anns, paths[1], OUT_IMG_DIR)
     ids = _getMatchedIds(OUT_ANN_DIR, OUT_IMG_DIR)
     _saveImgIdList(OUT_ID_LIST, sorted(ids))
-    if args.notImageNet:
-        saveMetaData(OUT_META_DATA, struct)
-    else:
-        _saveMetaData(OUT_META_DATA, struct, _findWnidsInAnnotationFolder(ids))
+    if len(paths) == 3:
+        saveMetaData(OUT_META_DATA, paths[2])
+    elif len(paths) == 4:
+        _saveMetaData(OUT_META_DATA, paths[3], paths[2])
