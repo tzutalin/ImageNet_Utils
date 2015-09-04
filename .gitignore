@@ -1,3 +1,5 @@
 *.pyc
 userinfo.json
 .pdet
+*.swp
+log

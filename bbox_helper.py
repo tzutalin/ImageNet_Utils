@@ -54,7 +54,7 @@ class BBoxHelper:
             im = Image.open(self.imgPath)
             for box in self.rects:
                  bbs.append(im.crop(box))
-        # Save them to target dir
+       # Save them to target dir
             count = 0
             for box in bbs:
                     count = count + 1

@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     if args.downloadBoundingBox is True:
         for id in args.wnid:
-            # Download andnotation files
+            # Download annotation files
             downloader.downloadBBox(id)
 
     if args.downloadOriginalImages is True:
