@@ -57,7 +57,7 @@ Output:
 ### Usage - Prepare ground truth for detection:
 Help users to prepare ground truth for ILSVC detection results evaluation.
 
-Create results for (ImageNet Large Scale Visual Recognition Challenge development kits)[http://image-net.org/challenges/LSVRC/2014/index]
+Create results for [ImageNet Large Scale Visual Recognition Challenge development kits](http://image-net.org/challenges/LSVRC/2014/index)
 
 `$ python gt_det.py dst_dir -p ann_dir img_dir labelMap.txt structure.xml`
 
