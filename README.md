@@ -1,5 +1,5 @@
 # ImageNet-Utils
-Utils to help download images by wnid, crop bounding box, etc.
+Utils to help download images, crop bounding box, GUI tool to annotate image in XML file etc.
 
 ### Requirements
 If you would like to download the original images, you should signup [ImageNet](http://www.image-net.org/)
@@ -7,15 +7,15 @@ If you would like to download the original images, you should signup [ImageNet](
 ### Usage - Download images:
 Get the urls of wnid and download all of them. E.g., download [Dog images from ImageNet](http://www.image-net.org/synset?wnid=n02084071) and save images to ./n02084071/url_images/*.jpg
 
-`$ python downloadutils.py --downloadImages --wnid n02084071`
+`$ ./downloadutils.py --downloadImages --wnid n02084071`
 
 Download all original images. E.g., download the original images about [person](http://www.image-net.org/synset?wnid=n00007846) and save to ./n00007846/n00007846_original_images/*.JPEG
 
-`$ python downloadutils.py --downloadOriginalImages --wnid n00007846`
+`$ ./downloadutils.py --downloadOriginalImages --wnid n00007846`
 
 Download the boundingbox xml of wnid. E.g., download  bounding boxes of original images about [person](http://www.image-net.org/synset?wnid=n00007846)
 
-`$ python downloadutils.py --downloadBoundingBox --wnid n00007846`
+`$ ./downloadutils.py --downloadBoundingBox --wnid n00007846`
 
 ### Usage - Label images into text files:
 Utils to create train.txt, val.txt, and test.txt
@@ -31,9 +31,9 @@ Auto assign a label to each folder containing images under the dir. Create train
 `$ ./labelcreator.py --size_of_train 1200 --size_of_val 300 --size_of_test 300`
 
 ### Usage - Crop the image by annotation XML:
-Search the specificed image according to its boudingbox's xml. If found, it will crop and save as ./boundingbox/*.JPEG
+Search the specified image according to its boudingbox's xml, so-called annotation file. If found, it will crop and save as ./boundingbox/*.JPEG
 
-`$ ./bbox_helper.py --bxmlpath n00007846/Annotation/n00007846/n00007846_23985.xml --save_boundingbox`
+`$ ./bbox_helper.py --save_boundingbox --bxmlpath n00007846/Annotation/n00007846/n00007846_23985.xml `
 
 Output:
 
@@ -42,7 +42,9 @@ Output:
     [[227, 25, 323, 91]]
     save to n00007846/bounding_box_imgs/n00007846_23985_box1.JPEG
 
-`$ ./bbox_helper.py --bxmldir n00007846/ --save_boundingbox`
+Specify a directory and crop the images according its annotation file
+
+`$ ./bbox_helper.py --save_boundingbox --bxmldir n00007846/`
 
 Output:
 

@@ -33,14 +33,22 @@ class BBoxHelper:
                     bndbox = object_iter.find("bndbox")
                     self.rects.append([int(it.text) for it in bndbox])
 
-            self.imgPath = image_path
+            localPath = xmltree.find('path')
+
+            self.imgPath = None
+            if localPath is not None and os.path.exists(localPath.text):
+                self.imgPath = localPath.text
+
+            if image_path is not None:
+                self.imgPath = image_path
+
 
     def saveBoundBoxImage(self, imgPath=None, outputFolder=None):
-            if imgPath == None:
-                self.imgPath = self.findImagePath()
+            if imgPath is not None:
+                self.imgPath = imgPath
 
-            if self.imgPath == None:
-                return
+            if imgPath is None and self.imgPath is None:
+                self.imgPath = self.findImagePath()
 
             if outputFolder == None:
                 outputFolder = os.path.join(self.wnid, 'bounding_box_imgs')
