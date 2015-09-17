@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 import argparse
 import sys
 import os
+import _init_paths
 import imagedownloader
 import pref_utils
 

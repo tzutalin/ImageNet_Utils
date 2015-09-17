@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+import sys
+sys.path.insert(0, '../')
 import bbox_helper
 import argparse
 import os
