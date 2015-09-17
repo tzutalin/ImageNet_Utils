@@ -57,9 +57,13 @@ Output:
     .....
 
 ### Usage - Use a GUI tool to create a annotation XML:
-`$ git pull --recurse-submodules`
+`$ git submodule init`
+
+`$ git submodule update --recursive`gi
 
 `$ cd labelImgGUI`
+
+`$ make all`
 
 `$ ./labelImg.py`
 
