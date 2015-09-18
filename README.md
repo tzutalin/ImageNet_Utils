@@ -59,6 +59,9 @@ Output:
     .....
 
 ### Usage - Use a GUI tool to create a annotation XML:
+
+![](demo/demo.png)
+
 `$ git submodule init`
 
 `$ git submodule update --recursive`
@@ -71,6 +74,6 @@ Output:
 
 More Info:
  [labelImg](https://github.com/tzutalin/labelImg)
- 
+
  [Video demo](https://www.youtube.com/watch?v=p0nR2YsCY_U)
-           
+
