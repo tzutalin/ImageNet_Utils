@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import xml.etree.ElementTree as et
 import os
 import argparse
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         try:
             rootIn = et.parse(os.path.join(args.bboxes, f)).getroot()
         except:
-            print("Fail to open " + f + " !")
+            print('Fail to open ' + f + '!')
             continue
 
         addImg(imgs, rootIn, args.imgPath)
