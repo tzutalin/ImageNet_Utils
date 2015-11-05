@@ -77,3 +77,7 @@ More Info:
 
  [Video demo](https://www.youtube.com/watch?v=p0nR2YsCY_U)
 
+### Usage - Convert Pascal Bounding Boxes to Dlib format:
+Script to convert bounding boxes in Pascal format (e.g., demo/pascalBoxes/) to bounding boxes in Dlib format (e.g., demo/dlibDetBoxes.xml).
+
+`./boxesCvtPascaltoDlib.py <path/to/pascal/boxes> <path/to/img/folder> --out out.xml`
