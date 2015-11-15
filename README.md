@@ -1,6 +1,10 @@
 # ImageNet-Utils
 Utils to help download images, crop bounding box, GUI tool to annotate image in XML file etc.
 
+Grap the source
+
+`$ git clone --recursive https://github.com/tzutalin/ImageNet_Utils.git`
+
 ### Requirements
 If you would like to download the original images, you should signup [ImageNet](http://www.image-net.org/)
 
@@ -65,6 +69,8 @@ Output:
 `$ git submodule init`
 
 `$ git submodule update --recursive`
+
+`$ sudo apt-get install pyqt4-dev-tools`
 
 `$ cd labelImgGUI`
 
