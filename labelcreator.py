@@ -6,12 +6,12 @@ import Image
 import logging
 
 def isImageValid(imagePath):
-    im = Image.open(imagePath)
-    width, height = im.size
-    minSize = 100
-    if width <= minSize or height <= minSize:
-        print 'Too small, so do not include :' + imagePath
-        return False
+    # im = Image.open(imagePath)
+    # width, height = im.size
+    # minSize = 100
+    # if width <= minSize or height <= minSize:
+        # print 'Too small, so do not include :' + imagePath
+        # return False
     return True
 
 def scanAllImages(folderPath):
