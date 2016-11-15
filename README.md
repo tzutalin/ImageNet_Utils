@@ -89,7 +89,7 @@ Script to convert bounding boxes in Pascal format (e.g., demo/pascalBoxes/) to b
 `./boxesCvtPascaltoDlib.py <path/to/pascal/boxes> <path/to/img/folder> --out out.xml`
 
 ### LICENSE
-Copyright (C) <2015> TzuTa Lin and Will Kao
+Copyright (C) <2015-2016> TzuTa Lin and Will Kao
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
