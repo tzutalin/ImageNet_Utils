@@ -15,7 +15,7 @@ class ImageNetDownloader:
     def __init__(self):
         self.host = 'http://www.image-net.org'
 
-    def download_file(self, url, desc=None, renamed_file=None):
+    def download_file(self, url, desc=None, renamed_file=None, replace_if_exists=False):
         u = urllib2.urlopen(url)
 
         scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
@@ -28,6 +28,13 @@ class ImageNetDownloader:
 
         if desc:
             filename = os.path.join(desc, filename)
+
+        # if the file should not be replaced if already present 
+        # then check if is already exists, if it does then just return the file name
+        if replace_if_exists is False:
+            if os.path.isfile(filename):
+                print("Image already downloaded: {}".format(filename))
+                return filename
 
         with open(filename, 'wb') as f:
             meta = u.info()
@@ -118,7 +125,7 @@ class ImageNetDownloader:
             os.mkdir(wnid)
         return os.path.abspath(wnid)
 
-    def downloadImagesByURLs(self, wnid, imageUrls):
+    def downloadImagesByURLs(self, wnid, imageUrls, replace_if_exists=False):
         # save to the dir e.g: n005555_urlimages/
         wnid_urlimages_dir = os.path.join(self.mkWnidDir(wnid), str(wnid) + '_urlimages')
         if not os.path.exists(wnid_urlimages_dir):
@@ -126,12 +133,12 @@ class ImageNetDownloader:
 
         for url in imageUrls:
             try:
-                self.download_file(url, wnid_urlimages_dir)
+                self.download_file(url, wnid_urlimages_dir, replace_if_exists=replace_if_exists)
             except Exception, error:
                 print 'Fail to download : ' + url
                 print str(error)
 
-    def downloadImagesByURLsMapping(self, wnid, imageUrlsMapping):
+    def downloadImagesByURLsMapping(self, wnid, imageUrlsMapping, replace_if_exists=False):
         # save to the dir e.g: n005555_urlimages/
         wnid_urlimages_dir = os.path.join(self.mkWnidDir(wnid), str(wnid) + '_urlimages')
         if not os.path.exists(wnid_urlimages_dir):
@@ -139,7 +146,7 @@ class ImageNetDownloader:
 
         for imageInfo in imageUrlsMapping:
             try:
-                self.download_file(imageInfo['url'], wnid_urlimages_dir, imageInfo['filename']+'.JPEG')
+                self.download_file(imageInfo['url'], wnid_urlimages_dir, imageInfo['filename']+'.JPEG', replace_if_exists=replace_if_exists)
             except Exception, error:
                 print 'Fail to download : ' + imageInfo['url']
                 print str(error)
