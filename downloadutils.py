@@ -31,8 +31,8 @@ if __name__ == '__main__':
 
     if args.downloadImages is True:
         for id in args.wnid:
-            list = downloader.getImageURLsOfWnid(id)
-            downloader.downloadImagesByURLs(id, list)
+            mapping = downloader.getImageURLsMappingOfWnid(id)
+            downloader.downloadImagesByURLsMapping(id, mapping)
 
     if args.downloadBoundingBox is True:
         for id in args.wnid:

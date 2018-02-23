@@ -87,6 +87,32 @@ class ImageNetDownloader:
 
         return imageUrls
 
+    def getImageURLsMappingOfWnid(self, wnid):
+        url = 'http://www.image-net.org/api/text/imagenet.synset.geturls.getmapping?wnid=' + str(wnid)
+        f = urllib.urlopen(url)
+        contents = f.read().split('\n')
+        imageUrlsMapping = []
+
+        for each_line in contents:
+            # Remove unnecessary char
+            each_line = each_line.replace('\r', '').strip()
+            if each_line:
+                # parsing each line into filename and imageUrl
+                each_line_split = each_line.split(' ')
+
+                if len(each_line_split) != 2:
+                    continue
+
+                filename = each_line_split[0]
+                imageUrl = each_line_split[1]
+                
+                imageUrlsMapping.append({
+                    'filename': filename,
+                    'url': imageUrl
+                })
+
+        return imageUrlsMapping
+
     def mkWnidDir(self, wnid):
         if not os.path.exists(wnid):
             os.mkdir(wnid)
@@ -104,6 +130,20 @@ class ImageNetDownloader:
             except Exception, error:
                 print 'Fail to download : ' + url
                 print str(error)
+
+    def downloadImagesByURLsMapping(self, wnid, imageUrlsMapping):
+        # save to the dir e.g: n005555_urlimages/
+        wnid_urlimages_dir = os.path.join(self.mkWnidDir(wnid), str(wnid) + '_urlimages')
+        if not os.path.exists(wnid_urlimages_dir):
+            os.mkdir(wnid_urlimages_dir)
+
+        for imageInfo in imageUrlsMapping:
+            try:
+                self.download_file(imageInfo['url'], wnid_urlimages_dir, imageInfo['filename']+'.JPEG')
+            except Exception, error:
+                print 'Fail to download : ' + imageInfo['url']
+                print str(error)
+
 
     def downloadOriginalImages(self, wnid, username, accesskey):
         download_url = 'http://www.image-net.org/download/synset?wnid=%s&username=%s&accesskey=%s&release=latest&src=stanford' % (wnid, username, accesskey)
