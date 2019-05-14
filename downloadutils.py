@@ -12,6 +12,7 @@ if __name__ == '__main__':
     p.add_argument('--downloadImages', help='Should download images', action='store_true', default=False)
     p.add_argument('--downloadOriginalImages', help='Should download original images', action='store_true', default=False)
     p.add_argument('--downloadBoundingBox', help='Should download bouding box annotation files', action='store_true', default=False)
+    p.add_argument('-n', '--numImages', help='Max number of images to download from each category', type=int,  default=-1)
     # p.add_argument('--jobs', '-j', type=int, default=1, help='Number of parallel threads to download')
     # p.add_argument('--timeout', '-t', type=int, default=10, help='Timeout per image in seconds')
     # p.add_argument('--retry', '-r', type=int, default=10, help='Max count of retry for each image')
@@ -32,6 +33,8 @@ if __name__ == '__main__':
     if args.downloadImages is True:
         for id in args.wnid:
             list = downloader.getImageURLsOfWnid(id)
+            # Only keep the first n results if specified
+            list = list[:args.numImages] if args.numImages != -1 else list
             downloader.downloadImagesByURLs(id, list)
 
     if args.downloadBoundingBox is True:
